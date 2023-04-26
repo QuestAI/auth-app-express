@@ -1,0 +1,37 @@
+name: Deploy to Cloud Run
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    name: Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - id: auth
+        name: Authenticate GCP
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: layout-detection-api
+          region: us-central1
+          source: ./
+          flags: '--allow-unauthenticated'
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: '<@&935659137155604550> {{ EVENT_PAYLOAD.repository.full_name }} has been deployed to PROD by {{ EVENT_PAYLOAD.sender.login }}.'
