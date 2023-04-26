@@ -25,13 +25,7 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v1
         with:
-          service: layout-detection-api
+          service: auth-app-express
           region: us-central1
           source: ./
           flags: '--allow-unauthenticated'
-      - name: Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        uses: Ilshidur/action-discord@master
-        with:
-          args: '<@&935659137155604550> {{ EVENT_PAYLOAD.repository.full_name }} has been deployed to PROD by {{ EVENT_PAYLOAD.sender.login }}.'
