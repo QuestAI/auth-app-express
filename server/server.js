@@ -21,13 +21,13 @@ const PORT = process.env.PORT || 4000;
 app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
 
-app.use(express.static(path.join(__dirname, './client/build')));
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(cors());
 app.use(logger);
 
 // Routes
 app.use('/client', (req, res) => {
-  res.sendFile(path.join(__dirname, './client/build/index.html'));
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
 app.use('/', AuthRoutes);
 
