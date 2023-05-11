@@ -44,4 +44,14 @@ const login = async (req, res, next) => {
   }
 };
 
-export default { signup, login };
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await authService.getAllUsers();
+    return res.status(200).json({ users });
+  } catch (error) {
+    error.statusCode = 503;
+    next(error);
+  }
+};
+
+export default { signup, login, getAllUsers };
