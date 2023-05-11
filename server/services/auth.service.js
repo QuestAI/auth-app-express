@@ -41,4 +41,9 @@ const findUser = async ({ email }) => {
   return dbConnection.data.users.find((user) => user.email === email);
 };
 
-export default { signup, login };
+const getAllUsers = async () => {
+  await dbConnection.read();
+  return dbConnection.data.users;
+};
+
+export default { signup, login, getAllUsers };
