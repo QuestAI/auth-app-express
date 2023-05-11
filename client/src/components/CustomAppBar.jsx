@@ -9,7 +9,7 @@ import Container from '@mui/material/Container';
 
 function CustomAppBar() {
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <img

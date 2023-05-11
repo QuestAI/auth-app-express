@@ -7,19 +7,18 @@ import CustomAppBar from './components/CustomAppBar';
 const Root = styled('main')({
   height: '100vh',
   backgroundColor: 'wheat',
+  overflow: 'auto',
 });
 
 const Container = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  height: '100%',
   alignItems: 'center',
 });
 
 function App() {
   return (
     <Root>
-      {/* <div>Header</div> */}
       <Container>
         <Paper elevation={3}>
           <CustomAppBar />

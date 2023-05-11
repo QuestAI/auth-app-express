@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -13,21 +13,61 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import useApi from '../hooks/useApi';
 import { Skeleton } from '@mui/material';
+
+import EmptyState from './EmptyState';
 export default function MainTable() {
   const { data, isLoading, error } = useApi();
   const [showPassword, setShowPassword] = React.useState({});
 
-  const handleClickShowPassword = (id) => {
-    setShowPassword((show) => {
-      return {
-        ...showPassword,
-        [id]: !showPassword[id],
-      };
-    });
-  };
+  const handleClickShowPassword = useCallback(
+    (id) => {
+      setShowPassword((show) => {
+        return {
+          ...showPassword,
+          [id]: !showPassword[id],
+        };
+      });
+    },
+    [showPassword]
+  );
+
+  const displayedRows = useMemo(() => {
+    return (data?.users || []).map((row) => (
+      <TableRow
+        key={row.email}
+        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+      >
+        <TableCell component="th" scope="row">
+          <OutlinedInput value={row.email} fullWidth variant="outlined" />
+        </TableCell>
+        <TableCell align="left">
+          <OutlinedInput
+            value={row.password}
+            fullWidth
+            variant="outlined"
+            type={showPassword[row.email] ? 'text' : 'password'}
+            readOnly
+            disabled
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={() => handleClickShowPassword(row.email)}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+        </TableCell>
+      </TableRow>
+    ));
+  }, [data?.users, handleClickShowPassword, showPassword]);
+
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Table sx={{ minWidth: 750 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Email</TableCell>
@@ -45,59 +85,15 @@ export default function MainTable() {
                   <Skeleton variant="rounded" width={'100%'} height={60} />
                 </TableCell>
               </TableRow>
-              <TableRow key={Math.random().toString()}>
-                <TableCell component={'th'} scope="row">
-                  <Skeleton variant="rounded" width={'100%'} height={60} />
-                </TableCell>
-                <TableCell align="left">
-                  <Skeleton variant="rounded" width={'100%'} height={60} />
-                </TableCell>
-              </TableRow>
-              <TableRow key={Math.random().toString()}>
-                <TableCell component={'th'} scope="row">
-                  <Skeleton variant="rounded" width={'100%'} height={60} />
-                </TableCell>
-                <TableCell align="left">
-                  <Skeleton variant="rounded" width={'100%'} height={60} />
-                </TableCell>
-              </TableRow>
             </>
+          ) : displayedRows.length > 0 ? (
+            displayedRows
           ) : (
-            (data?.users || []).map((row) => (
-              <TableRow
-                key={row.email}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  <OutlinedInput
-                    value={row.email}
-                    fullWidth
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell align="left">
-                  <OutlinedInput
-                    value={row.password}
-                    fullWidth
-                    variant="outlined"
-                    type={showPassword[row.email] ? 'text' : 'password'}
-                    readOnly
-                    disabled
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={() => handleClickShowPassword(row.email)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                  />
-                </TableCell>
-              </TableRow>
-            ))
+            <TableRow key={Math.random().toString()}>
+              <TableCell component={'th'} scope="row" width={'100%'}>
+                <EmptyState />
+              </TableCell>
+            </TableRow>
           )}
         </TableBody>
       </Table>
